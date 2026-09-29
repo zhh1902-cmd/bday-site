@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --background-soft: #160b12;
+  --background-plum: #21101b;
+  --panel: rgba(34, 13, 27, 0.76);
+  --wine: #4a1020;
+  --burgundy: #681b35;
+  --rose: #9b3d5b;
+  --rose-soft: #d48698;
+  --blush: #e7a8b5;
+  --gold: #d4af6a;
+  --gold-warm: #e4c58a;
+  --sand: #f8eadc;
+  --ivory: #fff7ef;
+  --foreground: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(155, 61, 91, 0.22), transparent 32%),
+    radial-gradient(circle at bottom, rgba(212, 175, 106, 0.12), transparent 28%),
+    var(--background);
+  color: var(--sand);
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image: radial-gradient(rgba(255, 247, 239, 0.16) 0.5px, transparent 0.7px), radial-gradient(rgba(231, 168, 181, 0.1) 0.5px, transparent 0.8px);
+  background-position: 0 0, 13px 17px;
+  background-size: 19px 19px, 23px 23px;
+  opacity: 0.035;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(212, 175, 106, 0.35);
+  color: #fff;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255, 232, 221, 0.08), rgba(74, 16, 32, 0.16));
+  box-shadow: inset 0 1px 0 rgba(255, 247, 239, 0.1), 0 32px 90px rgba(22, 4, 14, 0.42);
+}
+
+.romantic-heart {
+  animation: heart-drift 12s ease-in-out infinite;
+  color: var(--rose-soft);
+  opacity: 0.48;
+}
+
+.romantic-sparkle {
+  animation: sparkle-pulse 4.5s ease-in-out infinite;
+  color: var(--gold-warm);
+}
+
+.birthday-balloon {
+  animation: balloon-drift 14s ease-in-out infinite;
+  border: 1px solid rgba(231, 168, 181, 0.32);
+  border-radius: 50% 50% 47% 47%;
+  box-shadow: inset -8px -10px 18px rgba(74, 16, 32, 0.3), 0 0 30px rgba(155, 61, 91, 0.16);
+}
+
+.heartbeat-glow {
+  animation: heartbeat-glow 4.8s ease-in-out infinite;
+}
+
+.final-message-bloom {
+  background: radial-gradient(circle, rgba(231, 168, 181, 0.18), transparent 62%);
+  filter: blur(22px);
+}
+
+.celebration-burst {
+  animation: celebration-burst 1.8s ease-out forwards;
+}
+
+.countdown-light {
+  animation: countdown-breathe 9s ease-in-out infinite;
+  filter: blur(70px);
+  opacity: 0.42;
+}
+
+.countdown-light-wine {
+  background: rgba(104, 27, 53, 0.62);
+}
+
+.countdown-light-rose {
+  animation-delay: -3s;
+  background: rgba(155, 61, 91, 0.32);
+}
+
+.countdown-light-gold {
+  animation-delay: -6s;
+  background: rgba(212, 175, 106, 0.24);
+}
+
+.countdown-ghost-heart {
+  width: min(76vw, 46rem);
+  height: min(76vw, 46rem);
+  color: rgba(228, 197, 138, 0.12);
+  filter: blur(0.2px);
+  opacity: 0.75;
+  transform: translate(-50%, -50%) rotate(-10deg);
+}
+
+.countdown-ghost-heart::after {
+  position: absolute;
+  inset: 15%;
+  border: 1px solid rgba(231, 168, 181, 0.12);
+  border-radius: 50%;
+  content: "";
+  filter: blur(12px);
+}
+
+.countdown-ribbon {
+  border-top: 1px solid rgba(228, 197, 138, 0.2);
+  border-radius: 50%;
+  opacity: 0.7;
+  transform: rotate(-14deg);
+}
+
+.countdown-ribbon-one {
+  left: -12%;
+  top: 16%;
+  width: 56%;
+  height: 24%;
+}
+
+.countdown-ribbon-two {
+  bottom: 8%;
+  right: -14%;
+  width: 54%;
+  height: 22%;
+  border-top-color: rgba(155, 61, 91, 0.28);
+  transform: rotate(18deg);
+}
+
+.countdown-segment {
+  overflow: hidden;
+  border: 1px solid rgba(228, 197, 138, 0.27);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(74, 16, 32, 0.66), rgba(22, 11, 18, 0.48));
+  box-shadow: inset 0 1px 0 rgba(255, 247, 239, 0.09), 0 18px 45px rgba(22, 4, 14, 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.countdown-segment-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(231, 168, 181, 0.14), transparent 60%);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.25);
+    opacity: 1;
+  }
+}
+
+@keyframes heart-drift {
+  0%, 100% { opacity: 0.2; transform: translate3d(0, 12px, 0) rotate(-8deg) scale(0.9); }
+  50% { opacity: 0.62; transform: translate3d(10px, -18px, 0) rotate(8deg) scale(1.05); }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.18; transform: scale(0.7) rotate(0deg); }
+  50% { opacity: 0.85; transform: scale(1.15) rotate(45deg); }
+}
+
+@keyframes balloon-drift {
+  0%, 100% { opacity: 0.12; transform: translate3d(0, 10px, 0) rotate(-4deg); }
+  50% { opacity: 0.26; transform: translate3d(12px, -22px, 0) rotate(4deg); }
+}
+
+@keyframes heartbeat-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(231, 168, 181, 0)); }
+  14% { filter: drop-shadow(0 0 12px rgba(231, 168, 181, 0.42)); }
+  28% { filter: drop-shadow(0 0 2px rgba(231, 168, 181, 0.15)); }
+  42% { filter: drop-shadow(0 0 9px rgba(212, 175, 106, 0.28)); }
+}
+
+@keyframes celebration-burst {
+  0% { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.5) rotate(0deg); }
+  25% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(var(--burst-x), var(--burst-y), 0) scale(1) rotate(var(--burst-rotate)); }
+}
+
+@keyframes countdown-breathe {
+  0%, 100% { opacity: 0.32; transform: scale(0.96); }
+  50% { opacity: 0.52; transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .romantic-heart,
+  .romantic-sparkle,
+  .birthday-balloon,
+  .heartbeat-glow {
+    animation: none !important;
+  }
+
+  .celebration-burst {
+    animation: none !important;
+    opacity: 0.55;
+  }
+
+  .countdown-light {
+    animation: none !important;
+  }
+}

@@ -17,7 +17,7 @@ export const birthdayConfig = {
   },
   hero: {
     image: "/images/hero/main.jpg",
-    eyebrow: "A day made for you",
+    eyebrow: "For the girl who makes my world feel different",
     emotionalLine: "Today is about celebrating you, the memories we've created, and everything our story has become.",
   },
   intro: {

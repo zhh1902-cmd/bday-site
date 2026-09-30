@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { BlowInteraction } from "@/components/cake/BlowInteraction";
@@ -44,6 +45,7 @@ export function CakeSection() {
   return (
     <section id="birthday-cake" className="relative overflow-hidden bg-[#050505] px-6 py-28 sm:px-10 sm:py-40">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(123,32,56,0.26),transparent_38%),radial-gradient(circle_at_50%_82%,rgba(212,175,106,0.08),transparent_24%)]" />
+      {state === "extinguishing" && <motion.div className="pointer-events-none absolute inset-0 bg-[#050505]" initial={{ opacity: 0 }} animate={{ opacity: 0.32 }} transition={{ duration: shouldReduceMotion ? 0.01 : 0.45 }} aria-hidden="true" />}
       <RomanticAtmosphere hearts sparkles />
       <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col items-center justify-center text-center">
         {state === "intro" && (
@@ -61,7 +63,7 @@ export function CakeSection() {
             {state === "cake-revealing" && <p className="text-[0.65rem] uppercase tracking-[0.3em] text-[#d4af6a]">{cakeContent.title}</p>}
             {state === "ready-to-blow" && <div className="w-full"><p className="font-display text-4xl text-[#f5e6d3] sm:text-6xl">{cakeContent.instruction}</p><div className="mt-6"><BlowInteraction onBlow={blow} /></div></div>}
             {state === "extinguishing" && <p className="font-display text-4xl text-[#d4af6a] sm:text-6xl">{cakeContent.extinguishingLabel}</p>}
-            {state === "wished" && <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative flex flex-col items-center"><div className="pointer-events-none absolute inset-x-[-25vw] top-1/2 h-10" aria-hidden="true">{[...Array(12)].map((_, index) => <span key={index} className="celebration-burst absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-[#d4af6a] shadow-[0_0_12px_rgba(212,175,106,0.8)]" style={{ "--burst-x": `${(index % 2 ? 1 : -1) * (70 + index * 11)}px`, "--burst-y": `${-18 - (index % 4) * 16}px`, "--burst-rotate": `${index * 28}deg` } as React.CSSProperties} />)}</div><h2 className="relative z-10 font-display text-6xl text-[#d4af6a] sm:text-8xl">{cakeContent.wishedTitle}</h2><p className="relative z-10 mt-5 font-display text-3xl text-[#f5e6d3]/80 sm:text-5xl">{cakeContent.wishedText}</p><button type="button" onClick={() => setState("completed")} className="relative z-10 mt-10 min-h-12 border border-[#d4af6a]/55 px-8 py-3 text-[0.65rem] uppercase tracking-[0.3em] text-[#f5e6d3] transition hover:bg-[#4a1020]/55 focus-visible:ring-2 focus-visible:ring-[#d4af6a]">{cakeContent.continueLabel}</button></motion.div>}
+            {state === "wished" && <motion.div initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: shouldReduceMotion ? 0.01 : 0.6 }} className="relative flex flex-col items-center"><div className="pointer-events-none absolute inset-x-[-25vw] top-1/2 h-10" aria-hidden="true">{[...Array(12)].map((_, index) => { const particleStyle = { "--burst-x": `${(index % 2 ? 1 : -1) * (70 + index * 11)}px`, "--burst-y": `${-18 - (index % 4) * 16}px`, "--burst-rotate": `${index * 28}deg` } as React.CSSProperties; return index === 0 ? <Heart key="wish-heart" size={15} className="celebration-burst absolute left-1/2 top-1/2 fill-[#e7a8b5] text-[#e7a8b5]" style={particleStyle} /> : <span key={index} className="celebration-burst absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-[#d4af6a] shadow-[0_0_12px_rgba(212,175,106,0.8)]" style={particleStyle} />; })}</div><h2 className="relative z-10 font-display text-6xl text-[#d4af6a] sm:text-8xl">{cakeContent.wishedTitle}</h2><p className="relative z-10 mt-5 max-w-xl font-display text-3xl leading-tight text-[#f5e6d3]/80 sm:text-5xl">{cakeContent.wishedText}</p><button type="button" onClick={() => setState("completed")} className="relative z-10 mt-10 min-h-12 border border-[#d4af6a]/55 px-8 py-3 text-[0.65rem] uppercase tracking-[0.3em] text-[#f5e6d3] transition hover:bg-[#4a1020]/55 focus-visible:ring-2 focus-visible:ring-[#d4af6a]">{cakeContent.continueLabel}</button></motion.div>}
           </motion.div>
         )}
       </div>

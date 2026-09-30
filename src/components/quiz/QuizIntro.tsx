@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { quizContent } from "@/data/quiz";
 
@@ -9,8 +9,10 @@ type QuizIntroProps = {
 };
 
 export function QuizIntro({ onStart }: QuizIntroProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.35 }} transition={{ duration: 0.9, ease: "easeOut" }} className="mx-auto max-w-4xl text-center">
+    <motion.div initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.35 }} transition={{ duration: shouldReduceMotion ? 0.01 : 0.9, ease: "easeOut" }} className="mx-auto max-w-4xl text-center">
       <div className="mb-6 text-[0.68rem] uppercase tracking-[0.44em] text-[#d4af6a]">{quizContent.eyebrow}</div>
       <h2 className="font-display text-5xl leading-none text-[#f5e6d3] sm:text-8xl">{quizContent.title}</h2>
       <p className="mt-7 font-display text-3xl text-[#f5e6d3]/85 sm:text-5xl">{quizContent.subtitle}</p>

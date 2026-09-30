@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "upload:private-album": "node --env-file-if-exists=.env.local scripts/upload-private-album.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.8.1",
+    "@vercel/blob": "^2.3.0",
     "framer-motion": "^13.4.3",
     "lucide-react": "^1.48.0",
     "next": "16.3.6",

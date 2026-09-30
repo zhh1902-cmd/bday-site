@@ -13,8 +13,8 @@ export interface QuizQuestion {
 }
 
 export const quizContent = {
-  eyebrow: "A private challenge",
-  title: "HOW WELL DO YOU KNOW OUR STORY?",
+  eyebrow: "A birthday story game",
+  title: "HOW WELL DO YOU KNOW US?",
   subtitle: "Let's see how much of our story you actually remember.",
   intro: "No hints. No shortcuts. Just the little details that make a story ours.",
   startLabel: "Start quiz",

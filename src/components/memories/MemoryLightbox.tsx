@@ -63,11 +63,11 @@ export function MemoryLightbox({ photos, index, onClose, onChange }: MemoryLight
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={photo.id} initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 1.02 }} transition={{ duration: shouldReduceMotion ? 0.01 : 0.35 }} className="absolute inset-0">
               {photo.type === "video" ? (
-                <video className="h-full w-full object-contain bg-[#050505]" controls playsInline muted preload="metadata" poster={photo.poster || photo.src} aria-label={photo.title || "Memory video"}>
+                <video className="h-full w-full object-contain bg-[#050505]" controls playsInline muted preload="metadata" poster={photo.poster} aria-label={photo.title || "Memory video"}>
                   <source src={photo.src} type="video/mp4" />
                 </video>
               ) : (
-                <Image src={photo.src} alt={photo.alt || photo.title || "Memory photograph"} fill sizes="100vw" className="object-contain" priority={index === 0} />
+                <Image src={photo.src} alt={photo.alt || photo.title || "Memory photograph"} fill sizes="100vw" className="object-contain" priority={index === 0} unoptimized={photo.src.startsWith("/api/private-album/")} />
               )}
             </motion.div>
           </AnimatePresence>

@@ -10,7 +10,7 @@ type AlbumGridProps = {
 
 export function AlbumGrid({ albums, onOpen }: AlbumGridProps) {
   return (
-    <div className="grid gap-5 sm:auto-rows-[minmax(12rem,auto)] sm:grid-cols-12 sm:gap-6 sm:items-stretch">
+    <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-start gap-8 sm:grid-cols-2 sm:gap-9 lg:grid-cols-3 lg:gap-10">
       {albums.map((album, index) => (
         <AlbumCard key={album.id} album={album} index={index} onOpen={onOpen} />
       ))}

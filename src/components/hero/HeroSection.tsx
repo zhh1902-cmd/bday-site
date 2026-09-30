@@ -1,19 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 
 import { RomanticAtmosphere } from "@/components/effects/RomanticAtmosphere";
 import { birthdayConfig } from "@/data/birthday";
 
 export function HeroSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section className="relative flex min-h-svh items-end overflow-hidden bg-[#050505] px-6 pb-16 pt-28 sm:px-10 sm:pb-20">
       <motion.div
-        initial={{ scale: 1.08, opacity: 0 }}
+        initial={{ scale: shouldReduceMotion ? 1 : 1.08, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.8, ease: "easeOut" }}
+        transition={{ duration: shouldReduceMotion ? 0.01 : 1.8, ease: "easeOut" }}
         className="absolute inset-0"
       >
         <Image
@@ -22,7 +24,7 @@ export function HeroSection() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-contain object-center"
         />
       </motion.div>
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.16),rgba(5,5,5,0.48)_42%,#050505_100%)]" />
@@ -39,9 +41,9 @@ export function HeroSection() {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+        transition={{ delay: shouldReduceMotion ? 0 : 0.5, duration: shouldReduceMotion ? 0.01 : 1, ease: "easeOut" }}
         className="relative z-10 max-w-4xl"
       >
         <p className="mb-5 text-[0.68rem] uppercase tracking-[0.45em] text-[#d4af6a]">{birthdayConfig.hero.eyebrow}</p>

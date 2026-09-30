@@ -1,27 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { birthdayConfig } from "@/data/birthday";
 
 export function BirthdayStats() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <div className="mt-16 grid border-y border-white/10 sm:grid-cols-3">
-      {birthdayConfig.stats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8, delay: index * 0.12, ease: "easeOut" }}
-          className="border-b border-white/10 px-6 py-10 text-center last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
-        >
-          <div className="font-display text-5xl text-[#d4af6a] sm:text-6xl">{stat.value}</div>
-          <div className="mt-3 text-[0.65rem] uppercase tracking-[0.28em] text-[#f5e6d3]/60">
-            {stat.label}
-          </div>
-        </motion.div>
-      ))}
+    <div className="relative mt-16 border-y border-[#d4af6a]/20">
+      <p className="pt-6 text-center text-[0.6rem] uppercase tracking-[0.34em] text-[#d4af6a]/75">Another beautiful year</p>
+      <div className="grid sm:grid-cols-3">
+        {birthdayConfig.stats.map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: shouldReduceMotion ? 0.01 : 0.75, delay: shouldReduceMotion ? 0 : index * 0.12, ease: "easeOut" }}
+            className="border-b border-[#d4af6a]/15 px-6 py-9 text-center last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+          >
+            <div className="font-display text-5xl text-[#f2d7aa] sm:text-6xl">{stat.value}</div>
+            <div className="mt-3 text-[0.62rem] uppercase tracking-[0.25em] text-[#f5e6d3]/55">
+              {stat.label}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }

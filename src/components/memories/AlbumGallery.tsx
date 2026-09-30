@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element -- Public album images need their intrinsic natural ratio. */
 import { ArrowLeft, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -10,16 +10,17 @@ type AlbumGalleryProps = {
   album: MemoryAlbum;
   onClose: () => void;
   onSelectPhoto: (photo: MemoryPhoto, index: number) => void;
+  reduceMotion?: boolean;
 };
 
-export function AlbumGallery({ album, onClose, onSelectPhoto }: AlbumGalleryProps) {
+export function AlbumGallery({ album, onClose, onSelectPhoto, reduceMotion = false }: AlbumGalleryProps) {
   return (
     <motion.div
       className="fixed inset-0 z-40 overflow-y-auto bg-[#050505]/95 px-5 py-6 backdrop-blur-xl sm:px-10 sm:py-10"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.45 }}
+      transition={{ duration: reduceMotion ? 0.01 : 0.45 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="album-gallery-title"
@@ -44,7 +45,7 @@ export function AlbumGallery({ album, onClose, onSelectPhoto }: AlbumGalleryProp
             <p className="font-display text-4xl text-[#f5e6d3]/75">Memories coming soon.</p>
           </div>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 sm:gap-12">
+          <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3">
             <AnimatePresence initial={false}>
               {album.photos.map((photo, index) => (
                 (() => {
@@ -55,27 +56,32 @@ export function AlbumGallery({ album, onClose, onSelectPhoto }: AlbumGalleryProp
                   type="button"
                   key={photo.id}
                   layoutId={`photo-${photo.id}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: reduceMotion ? 0 : 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: index * 0.08 }}
+                  transition={{ duration: reduceMotion ? 0.01 : 0.65, delay: reduceMotion ? 0 : index * 0.08 }}
                   onClick={() => onSelectPhoto(photo, index)}
-                  className={`group text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4af6a] ${index % 3 === 0 ? "sm:row-span-2" : ""}`}
+                  className="group text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4af6a]"
                   aria-label={`Open photo ${photo.title || `number ${index + 1}`}`}
                 >
-                  <div className={`relative overflow-hidden border border-[#f5e6d3]/15 bg-[#160b12] ${index % 3 === 0 ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
+                  <div className="relative border border-[#f5e6d3]/15 bg-[#160b12]">
                     {photo.type === "video" ? (
-                      <div className="relative h-full w-full">
-                        <Image src={photo.poster || photo.src} alt={photo.alt || photo.title || `${album.name} memory ${index + 1}`} fill sizes="(max-width: 640px) 100vw, 48vw" className="object-cover transition duration-1000 group-hover:scale-105" />
-                        <div className="absolute inset-0 flex items-center justify-center bg-[#050505]/20">
+                      <video src={photo.src} muted playsInline preload="metadata" aria-label={photo.alt || `${album.name} video ${index + 1}`} className="block h-auto max-h-[70vh] w-full object-contain" />
+                    ) : (
+                      <img
+                        src={photo.src}
+                        alt={photo.alt || photo.title || `${album.name} memory ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="block h-auto w-full object-contain"
+                      />
+                    )}
+                    {photo.type === "video" && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#050505]/10">
                           <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#f5e6d3]/60 bg-[#050505]/55 text-[#f5e6d3]">
                             <span className="ml-1 text-xl">▶</span>
                           </div>
                         </div>
-                      </div>
-                    ) : (
-                      <Image src={photo.src} alt={photo.alt || photo.title || `${album.name} memory ${index + 1}`} fill sizes="(max-width: 640px) 100vw, 48vw" className="object-cover transition duration-1000 group-hover:scale-105" />
                     )}
-                    <div className="absolute inset-0 bg-[#050505]/10 transition duration-700 group-hover:bg-[#050505]/30" />
                   </div>
                   <div className="mt-4 flex items-start justify-between gap-4">
                     <div>

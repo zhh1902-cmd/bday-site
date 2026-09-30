@@ -18,10 +18,10 @@ export interface MemoryAlbum {
 }
 
 export const memoryContent = {
-  eyebrow: "A private archive",
+  eyebrow: "Our birthday edition",
   title: "OUR MEMORIES",
-  subtitle: "Every picture has a story.",
-  intro: "Some moments pass in seconds. Some stay with us forever.",
+  subtitle: "Every little moment.",
+  intro: "The memories that made us, one moment at a time.",
   emptyState: "Memories coming soon.",
 } as const;
 
@@ -96,9 +96,6 @@ export const memoryAlbums: MemoryAlbum[] = [
     "IMG_20250809_185040_392.jpg",
     "IMG-20260814-WA0008.jpg",
     "IMG-20260814-WA0011.jpg",
-    "photo_2026-09-25_11-36-47.jpg",
-    "photo_2026-09-25_11-36-53.jpg",
-    "photo_2026-09-25_11-37-18.jpg",
   ]),
   createAlbum("our-dates", "Our Dates", "The places and days that became ours.", [
     "IMG_20251008_212053_542.jpg",

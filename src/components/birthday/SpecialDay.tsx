@@ -1,15 +1,16 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 import { RomanticAtmosphere } from "@/components/effects/RomanticAtmosphere";
 import { birthdayConfig } from "@/data/birthday";
 
 export function SpecialDay() {
+  const shouldReduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [36, -36]);
+  const y = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [36, -36]);
 
   return (
     <section ref={sectionRef} className="relative flex min-h-[78vh] items-center overflow-hidden bg-[#050505] px-6 py-28 sm:px-10">
@@ -25,11 +26,12 @@ export function SpecialDay() {
       </div>
       <RomanticAtmosphere hearts sparkles balloons />
       <motion.div style={{ y }} className="relative mx-auto max-w-5xl text-center">
+        <p className="mb-7 text-[0.62rem] uppercase tracking-[0.36em] text-[#d4af6a]">For {birthdayConfig.nickname} · 10 October</p>
         <motion.p
-          initial={{ opacity: 0, filter: "blur(10px)" }}
+          initial={{ opacity: 0, filter: shouldReduceMotion ? "blur(0px)" : "blur(10px)" }}
           whileInView={{ opacity: 1, filter: "blur(0px)" }}
           viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 1.1, ease: "easeOut" }}
+          transition={{ duration: shouldReduceMotion ? 0.01 : 1.1, ease: "easeOut" }}
           className="font-display text-4xl leading-[1.1] text-[#f5e6d3] sm:text-6xl md:text-7xl"
         >
           {birthdayConfig.specialDay.quote}

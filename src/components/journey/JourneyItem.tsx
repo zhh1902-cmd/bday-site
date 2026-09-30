@@ -46,14 +46,14 @@ export function JourneyItem({ entry, index }: JourneyItemProps) {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.28 }}
       transition={{ duration: shouldReduceMotion ? 0.01 : 0.9, delay: shouldReduceMotion ? 0 : 0.12, ease: "easeOut" }}
-      className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#d4af6a]/20 bg-[#160b12] shadow-[0_22px_70px_rgba(0,0,0,0.32)]"
+      className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#d4af6a]/20 bg-[#160b12] shadow-[0_22px_70px_rgba(0,0,0,0.32)] transition duration-700 hover:border-[#d4af6a]/45 hover:shadow-[0_22px_70px_rgba(0,0,0,0.32),0_0_28px_rgba(212,175,106,0.12)]"
     >
       <Image
         src={entry.image || ""}
         alt={entry.imageAlt || `${entry.title} memory`}
         fill
         sizes={entry.id === "first-birthday-of-us" ? "(max-width: 640px) 100vw, 46.5vw" : "(max-width: 640px) 100vw, 42vw"}
-        className="object-contain transition duration-1000 ease-out group-hover:scale-105"
+        className="object-contain"
       />
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(5,5,5,0.08),rgba(5,5,5,0.56))]" />
       <figcaption className="absolute bottom-4 left-4 text-[0.6rem] uppercase tracking-[0.26em] text-[#f5e6d3]/70">

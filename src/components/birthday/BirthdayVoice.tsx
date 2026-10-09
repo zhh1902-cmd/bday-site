@@ -1,96 +1,71 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-const voiceSessionKey = "birthday-voice-2026-10-10";
-let spokenInPageSession = false;
-let playbackInProgressInPageSession = false;
-let recording: HTMLAudioElement | null = null;
+import { useRef, useState } from "react";
 
 type BirthdayVoiceProps = {
   enabled: boolean;
 };
 
-type PlaybackBlockedSetter = (blocked: boolean) => void;
-
-function isAutoplayBlocked(error: unknown): boolean {
-  return typeof error === "object" && error !== null && "name" in error && error.name === "NotAllowedError";
-}
-
-function attemptBirthdayPlayback(setPlaybackBlocked: PlaybackBlockedSetter) {
-  if (spokenInPageSession || playbackInProgressInPageSession) return;
-  if (recording && !recording.paused) return;
-
-  recording ??= new Audio("/audio/birthday/record.mp3");
-  playbackInProgressInPageSession = true;
-  setPlaybackBlocked(false);
-
-  const markPlaybackStarted = () => {
-    spokenInPageSession = true;
-    playbackInProgressInPageSession = false;
-    try {
-      window.sessionStorage.setItem(voiceSessionKey, "1");
-    } catch {
-      // In-page state still prevents duplicate playback if storage is unavailable.
-    }
-  };
-
-  const handlePlaybackError = (error: unknown) => {
-    playbackInProgressInPageSession = false;
-    if (isAutoplayBlocked(error)) {
-      setPlaybackBlocked(true);
-    } else {
-      console.error("Birthday voice playback failed.", error);
-    }
-  };
-
-  try {
-    void recording.play().then(markPlaybackStarted).catch(handlePlaybackError);
-  } catch (error) {
-    handlePlaybackError(error);
-  }
-}
-
 export function BirthdayVoice({ enabled }: BirthdayVoiceProps) {
-  const [playbackBlocked, setPlaybackBlocked] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playbackInProgressRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [playbackError, setPlaybackError] = useState(false);
 
-  useEffect(() => {
-    if (!enabled) return;
+  const finishPlayback = () => {
+    playbackInProgressRef.current = false;
+    setIsStarting(false);
+    setIsPlaying(false);
+  };
+
+  const failPlayback = (error?: unknown) => {
+    if (!playbackInProgressRef.current) return;
+    if (error) console.error("Birthday voice playback failed.", error);
+    playbackInProgressRef.current = false;
+    setIsStarting(false);
+    setIsPlaying(false);
+    setPlaybackError(true);
+  };
+
+  const playBirthdayMessage = () => {
+    if (playbackInProgressRef.current) return;
+
+    playbackInProgressRef.current = true;
+    setIsStarting(true);
+    setPlaybackError(false);
+    const recording = audioRef.current ?? new Audio("/audio/birthday/record.mp3");
+    audioRef.current = recording;
+    recording.onended = finishPlayback;
+    recording.onerror = () => failPlayback(new Error("The birthday recording could not be loaded."));
 
     try {
-      if (window.sessionStorage.getItem(voiceSessionKey)) {
-        spokenInPageSession = true;
-        return;
-      }
-    } catch {
-      if (spokenInPageSession) return;
+      void recording.play().then(() => {
+        if (playbackInProgressRef.current) {
+          setIsStarting(false);
+          setIsPlaying(true);
+        }
+      }).catch(failPlayback);
+    } catch (error) {
+      failPlayback(error);
     }
+  };
 
-    const attemptPlaybackOnResume = () => {
-      if (document.visibilityState === "visible") attemptBirthdayPlayback(setPlaybackBlocked);
-    };
-
-    document.addEventListener("visibilitychange", attemptPlaybackOnResume);
-    window.addEventListener("pageshow", attemptPlaybackOnResume);
-    attemptBirthdayPlayback(setPlaybackBlocked);
-
-    return () => {
-      document.removeEventListener("visibilitychange", attemptPlaybackOnResume);
-      window.removeEventListener("pageshow", attemptPlaybackOnResume);
-    };
-  }, [enabled]);
-
-  if (!enabled || !playbackBlocked || spokenInPageSession) return null;
+  if (!enabled) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
+    <section aria-label="Birthday voice message" className="relative z-20 flex flex-col items-center px-4 pt-6 text-center">
       <button
         type="button"
-        onClick={() => attemptBirthdayPlayback(setPlaybackBlocked)}
-        className="rounded-full border border-[#e4c58a]/60 bg-[#21101b]/95 px-6 py-3 text-sm text-[#fff7ef] shadow-[0_12px_40px_rgba(22,4,14,0.5)] backdrop-blur transition hover:border-[#e4c58a] hover:bg-[#4a1020] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e4c58a]"
+        onClick={playBirthdayMessage}
+        disabled={isStarting || isPlaying}
+        className="min-h-12 rounded-full border border-[#e4c58a]/65 bg-linear-to-r from-[#4a1020] to-[#681b35] px-7 py-3 text-sm font-medium tracking-wide text-[#fff7ef] shadow-[0_12px_40px_rgba(22,4,14,0.42)] transition hover:border-[#e4c58a] hover:from-[#681b35] hover:to-[#4a1020] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e4c58a] disabled:cursor-not-allowed disabled:opacity-75"
       >
-        Tap to hear the birthday message ❤️
+        {isPlaying || isStarting ? "Playing your special message… ❤️" : "Play Your Birthday Message ❤️"}
       </button>
-    </div>
+      <p aria-live="polite" className="mt-3 min-h-6 text-sm text-[#e7a8b5]">
+        {playbackError ? "We couldn’t play your message. Please tap to try again ❤️" : ""}
+      </p>
+    </section>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- Public album images need their intrinsic natural ratio. */
-import { ArrowLeft, X } from "lucide-react";
+import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { MemoryAlbum, MemoryPhoto } from "@/data/albums";
+import { memoryContent, type MemoryAlbum, type MemoryPhoto } from "@/data/albums";
 
 type AlbumGalleryProps = {
   album: MemoryAlbum;
@@ -29,9 +29,9 @@ export function AlbumGallery({ album, onClose, onSelectPhoto, reduceMotion = fal
         <div className="mb-12 flex items-start justify-between gap-6">
           <div>
             <button type="button" onClick={onClose} className="mb-8 flex min-h-11 items-center gap-3 text-[0.62rem] uppercase tracking-[0.28em] text-[#f5e6d3]/60 transition hover:text-[#d4af6a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4af6a]">
-              <ArrowLeft size={16} aria-hidden="true" /> Back to memories
+              {memoryContent.galleryBackLabel}
             </button>
-            <div className="text-[0.65rem] uppercase tracking-[0.38em] text-[#d4af6a]">Private collection</div>
+            <div className="text-[0.65rem] uppercase tracking-[0.38em] text-[#d4af6a]">{memoryContent.albumPrivateLabel}</div>
             <h2 id="album-gallery-title" className="mt-4 font-display text-5xl text-[#f5e6d3] sm:text-7xl">{album.name}</h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-[#f5e6d3]/60">{album.description}</p>
           </div>
@@ -42,7 +42,7 @@ export function AlbumGallery({ album, onClose, onSelectPhoto, reduceMotion = fal
 
         {album.photos.length === 0 ? (
           <div className="flex min-h-[40vh] items-center justify-center border-y border-[#d4af6a]/20 text-center">
-            <p className="font-display text-4xl text-[#f5e6d3]/75">Memories coming soon.</p>
+            <p className="font-display text-4xl text-[#f5e6d3]/75">{memoryContent.emptyState}</p>
           </div>
         ) : (
           <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3">

@@ -1,17 +1,9 @@
 export const privateAlbumContent = {
   id: "only-us",
+  eyebrow: "Oka chinna secret ❤️",
   name: "ONLY US",
-  subtitle: "Private Memories",
-  description: "Some memories are meant to stay between us.",
-  lockMessage: "Some memories are meant\nto stay between us.",
-  wrongPassword: "That's not the key to our little secret.",
+  subtitle: "Mana Memories",
+  description: "Konni memories mana iddari madhyalo undipovali. ❤️",
+  lockMessage: "Konni memories mana iddari madhyalo undipovali. ❤️",
+  wrongPassword: "Adi mana little secret password kaadu... malli try cheyyi. ❤️",
 } as const;
-
-export interface PrivateAlbumPhoto {
-  id: string;
-  src: string;
-  type: "image" | "video";
-  alt: string;
-  title: string;
-  caption: string;
-}

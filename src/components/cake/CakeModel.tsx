@@ -33,7 +33,7 @@ export function CakeModel({ extinguishRequested, extinguished }: CakeModelProps)
   });
 
   return (
-    <group ref={group} position={[0, -1.2, 0]}>
+    <group ref={group} position={[0, -1.65, 0]}>
       <mesh position={[0, 0.1, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[1.65, 1.72, 0.38, 48]} />
         <meshStandardMaterial color="#3a101e" roughness={0.32} metalness={0.1} />

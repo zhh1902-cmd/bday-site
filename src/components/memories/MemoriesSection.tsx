@@ -6,36 +6,39 @@ import { useEffect, useRef, useState } from "react";
 import { AlbumGallery } from "@/components/memories/AlbumGallery";
 import { AlbumGrid } from "@/components/memories/AlbumGrid";
 import { MemoryLightbox } from "@/components/memories/MemoryLightbox";
+import { OnlyUsExperience } from "@/components/memories/OnlyUsExperience";
 import { PrivateAlbumAccess } from "@/components/memories/PrivateAlbumAccess";
 import { PrivateAlbumCard } from "@/components/memories/PrivateAlbumCard";
 import { RomanticAtmosphere } from "@/components/effects/RomanticAtmosphere";
 import { memoryAlbums, memoryContent, type MemoryAlbum, type MemoryPhoto } from "@/data/albums";
-import { privateAlbumContent } from "@/data/privateAlbum";
 
 export function MemoriesSection() {
   const shouldReduceMotion = useReducedMotion();
   const [selectedAlbum, setSelectedAlbum] = useState<MemoryAlbum | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [privateAccessOpen, setPrivateAccessOpen] = useState(false);
+  const [onlyUsOpen, setOnlyUsOpen] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    const isOverlayOpen = selectedAlbum !== null || privateAccessOpen;
+    const isOverlayOpen = selectedAlbum !== null || privateAccessOpen || onlyUsOpen;
     document.body.style.overflow = isOverlayOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [privateAccessOpen, selectedAlbum]);
+  }, [onlyUsOpen, privateAccessOpen, selectedAlbum]);
 
   useEffect(() => {
-    if (selectedAlbum || privateAccessOpen) return;
+    if (selectedAlbum || privateAccessOpen || onlyUsOpen) return;
     lastTrigger.current?.focus();
-  }, [privateAccessOpen, selectedAlbum]);
+  }, [onlyUsOpen, privateAccessOpen, selectedAlbum]);
 
   useEffect(() => {
-    if (!selectedAlbum && !privateAccessOpen) return;
+    if (!selectedAlbum && !privateAccessOpen && !onlyUsOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         if (lightboxIndex !== null) setLightboxIndex(null);
         else if (selectedAlbum) setSelectedAlbum(null);
+        else if (onlyUsOpen) setOnlyUsOpen(false);
         else setPrivateAccessOpen(false);
       }
       if (selectedAlbum && lightboxIndex !== null && event.key === "ArrowRight") setLightboxIndex((lightboxIndex + 1) % selectedAlbum.photos.length);
@@ -43,7 +46,7 @@ export function MemoriesSection() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [lightboxIndex, privateAccessOpen, selectedAlbum]);
+  }, [lightboxIndex, onlyUsOpen, privateAccessOpen, selectedAlbum]);
 
   const openAlbum = (album: MemoryAlbum, button: HTMLButtonElement) => {
     lastTrigger.current = button;
@@ -53,22 +56,17 @@ export function MemoriesSection() {
 
   const openPhoto = (_photo: MemoryPhoto, index: number) => setLightboxIndex(index);
 
-  const openPrivateAlbum = (button: HTMLButtonElement) => {
+  const openPrivateAlbum = (button: HTMLButtonElement, previewMode = false) => {
     lastTrigger.current = button;
     setSelectedAlbum(null);
     setLightboxIndex(null);
+    setIsPreviewMode(previewMode);
     setPrivateAccessOpen(true);
   };
 
-  const unlockPrivateAlbum = (photos: MemoryPhoto[]) => {
-    setSelectedAlbum({
-      id: privateAlbumContent.id,
-      name: privateAlbumContent.name,
-      description: privateAlbumContent.description,
-      cover: "",
-      photos,
-    });
+  const unlockPrivateAlbum = () => {
     setPrivateAccessOpen(false);
+    setOnlyUsOpen(true);
   };
 
   return (
@@ -88,8 +86,9 @@ export function MemoriesSection() {
       </div>
 
       <AnimatePresence>
-        {privateAccessOpen && <PrivateAlbumAccess onClose={() => setPrivateAccessOpen(false)} onUnlocked={unlockPrivateAlbum} />}
-        {selectedAlbum && lightboxIndex === null && <AlbumGallery album={selectedAlbum} onClose={() => setSelectedAlbum(null)} onSelectPhoto={openPhoto} reduceMotion={selectedAlbum.id === privateAlbumContent.id && shouldReduceMotion === true} />}
+        {privateAccessOpen && <PrivateAlbumAccess onClose={() => setPrivateAccessOpen(false)} onUnlocked={unlockPrivateAlbum} previewMode={isPreviewMode} />}
+        {onlyUsOpen && <OnlyUsExperience onClose={() => setOnlyUsOpen(false)} />}
+        {selectedAlbum && lightboxIndex === null && <AlbumGallery album={selectedAlbum} onClose={() => setSelectedAlbum(null)} onSelectPhoto={openPhoto} reduceMotion={shouldReduceMotion === true} />}
         {selectedAlbum && lightboxIndex !== null && <MemoryLightbox photos={selectedAlbum.photos} index={lightboxIndex} onClose={() => setLightboxIndex(null)} onChange={setLightboxIndex} />}
       </AnimatePresence>
     </section>

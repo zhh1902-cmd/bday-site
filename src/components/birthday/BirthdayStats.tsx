@@ -9,7 +9,7 @@ export function BirthdayStats() {
 
   return (
     <div className="relative mt-16 border-y border-[#d4af6a]/20">
-      <p className="pt-6 text-center text-[0.6rem] uppercase tracking-[0.34em] text-[#d4af6a]/75">Another beautiful year</p>
+      <p className="pt-6 text-center text-[0.6rem] uppercase tracking-[0.34em] text-[#d4af6a]/75">{birthdayConfig.statsTitle}</p>
       <div className="grid sm:grid-cols-3">
         {birthdayConfig.stats.map((stat, index) => (
           <motion.div

@@ -55,7 +55,7 @@ export function QuizQuestion({ question, current, total, selectedAnswer, submitt
         })}
       </fieldset>
       <div className="mt-8 flex items-center justify-between gap-4">
-        <button type="button" onClick={onPrevious} className="min-h-12 px-2 py-3 text-[0.65rem] uppercase tracking-[0.28em] text-[#f5e6d3]/60 transition hover:text-[#f5e6d3] focus-visible:outline-2 focus-visible:outline-[#d4af6a]">← Previous</button>
+        <button type="button" onClick={onPrevious} className="min-h-12 px-2 py-3 text-[0.65rem] uppercase tracking-[0.28em] text-[#f5e6d3]/60 transition hover:text-[#f5e6d3] focus-visible:outline-2 focus-visible:outline-[#d4af6a]">← Venakki</button>
         {submitted && selectedAnswer !== null && <QuizFeedback question={question} selectedAnswer={selectedAnswer} />}
       </div>
     </motion.div>

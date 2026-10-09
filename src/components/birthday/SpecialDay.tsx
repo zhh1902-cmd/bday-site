@@ -26,7 +26,7 @@ export function SpecialDay() {
       </div>
       <RomanticAtmosphere hearts sparkles balloons />
       <motion.div style={{ y }} className="relative mx-auto max-w-5xl text-center">
-        <p className="mb-7 text-[0.62rem] uppercase tracking-[0.36em] text-[#d4af6a]">For {birthdayConfig.nickname} · 10 October</p>
+        <p className="mb-7 text-[0.62rem] uppercase tracking-[0.36em] text-[#d4af6a]">{birthdayConfig.specialDay.eyebrow}</p>
         <motion.p
           initial={{ opacity: 0, filter: shouldReduceMotion ? "blur(0px)" : "blur(10px)" }}
           whileInView={{ opacity: 1, filter: "blur(0px)" }}

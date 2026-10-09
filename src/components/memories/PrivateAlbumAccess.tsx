@@ -4,19 +4,15 @@ import { LockKeyhole, X } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useEffectEvent, useState } from "react";
 
-import type { MemoryPhoto } from "@/data/albums";
-import { privateAlbumContent, type PrivateAlbumPhoto } from "@/data/privateAlbum";
+import { privateAlbumContent } from "@/data/privateAlbum";
 
 type PrivateAlbumAccessProps = {
   onClose: () => void;
-  onUnlocked: (photos: MemoryPhoto[]) => void;
+  onUnlocked: () => void;
+  previewMode: boolean;
 };
 
-type PhotoResponse = {
-  photos: PrivateAlbumPhoto[];
-};
-
-export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessProps) {
+export function PrivateAlbumAccess({ onClose, onUnlocked, previewMode }: PrivateAlbumAccessProps) {
   const shouldReduceMotion = useReducedMotion();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,8 +22,8 @@ export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessPr
   useEffect(() => {
     let active = true;
 
-    void fetchPhotos().then((photos) => {
-      if (active && photos) reportUnlocked(photos);
+    void checkSession().then((isUnlocked) => {
+      if (active && isUnlocked) reportUnlocked();
       else if (active) setIsCheckingSession(false);
     });
 
@@ -60,9 +56,7 @@ export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessPr
         return;
       }
 
-      const photos = await fetchPhotos();
-      if (photos) onUnlocked(photos);
-      else setErrorMessage("Private storage is not connected yet.");
+      onUnlocked();
     } catch {
       setErrorMessage("We could not reach the private album. Please try again.");
     } finally {
@@ -95,10 +89,12 @@ export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessPr
         <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center border border-[#d4af6a]/35 text-[#e8c98e] shadow-[0_0_50px_rgba(119,34,65,0.18)]">
           <LockKeyhole size={25} strokeWidth={1.35} aria-hidden="true" />
         </div>
-        <div className="text-[0.62rem] uppercase tracking-[0.38em] text-[#d4af6a]">Private Memories</div>
+        {previewMode && <div className="mb-4 text-[0.58rem] uppercase tracking-[0.28em] text-[#d48698]">Development Preview · Password Required</div>}
+        <div className="text-[0.62rem] uppercase tracking-[0.38em] text-[#d4af6a]">{privateAlbumContent.eyebrow}</div>
         <h2 id="private-album-title" className="mt-4 font-display text-5xl text-[#f5e6d3] sm:text-6xl">{privateAlbumContent.name}</h2>
+        <p className="mt-3 font-display text-xl text-[#f5e6d3]/75">{privateAlbumContent.subtitle}</p>
         {isCheckingSession ? (
-          <p className="mt-6 text-sm leading-7 text-[#f5e6d3]/55">Returning to our little secret...</p>
+          <p className="mt-6 text-sm leading-7 text-[#f5e6d3]/55">Mana little secret ki malli vasthunnam... ❤️</p>
         ) : (
           <>
             <p className="mx-auto mt-6 max-w-xs whitespace-pre-line font-display text-2xl leading-8 text-[#f5e6d3]/75">{privateAlbumContent.lockMessage}</p>
@@ -119,7 +115,7 @@ export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessPr
                 disabled={isSubmitting}
                 className="mt-5 flex min-h-12 w-full items-center justify-center border border-[#d4af6a]/60 bg-[#4c142d]/55 px-5 text-[0.62rem] uppercase tracking-[0.32em] text-[#f5e6d3] transition hover:border-[#d4af6a] hover:bg-[#641b3b]/65 focus-visible:outline-2 focus-visible:outline-[#d4af6a] disabled:cursor-wait disabled:opacity-55"
               >
-                {isSubmitting ? "Opening..." : "Unlock"}
+                {isSubmitting ? "Koncham sepu agu nana..." : "Unlock"}
               </button>
             </form>
           </>
@@ -129,14 +125,13 @@ export function PrivateAlbumAccess({ onClose, onUnlocked }: PrivateAlbumAccessPr
   );
 }
 
-async function fetchPhotos(): Promise<MemoryPhoto[] | null> {
+async function checkSession(): Promise<boolean> {
   try {
-    const response = await fetch("/api/private-album/photos", { cache: "no-store" });
-    if (!response.ok) return null;
-
-    const payload = await response.json() as PhotoResponse;
-    return payload.photos.map((photo) => ({ ...photo, type: photo.type }));
+    const response = await fetch("/api/private-album/session", { cache: "no-store" });
+    if (!response.ok) return false;
+    const payload = await response.json() as { unlocked?: boolean };
+    return payload.unlocked === true;
   } catch {
-    return null;
+    return false;
   }
 }

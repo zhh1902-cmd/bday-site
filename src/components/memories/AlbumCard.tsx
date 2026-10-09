@@ -4,7 +4,7 @@
 import { ArrowUpRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 
-import type { MemoryAlbum } from "@/data/albums";
+import { albumLabels, type MemoryAlbum } from "@/data/albums";
 
 type AlbumCardProps = {
   album: MemoryAlbum;
@@ -34,9 +34,9 @@ export function AlbumCard({ album, index, onOpen }: AlbumCardProps) {
       />
       <div className="flex items-start justify-between gap-4 border-b border-[#f5e6d3]/15 py-5">
         <div>
-          <div className="mb-2 text-[0.58rem] uppercase tracking-[0.32em] text-[#d4af6a]">{index === 4 ? "Birthday memories" : index === 0 ? "Opening chapter" : "Private archive"}</div>
+            <div className="mb-2 text-[0.58rem] uppercase tracking-[0.32em] text-[#d4af6a]">{albumLabels[album.id]}</div>
           <h3 className="font-display text-3xl leading-none text-[#f5e6d3] transition-colors group-hover:text-[#f2d7aa]">{album.name}</h3>
-          <p className="mt-3 text-sm leading-6 text-[#f5e6d3]/60">{album.description}</p>
+            <p className="mt-3 text-sm leading-6 text-[#f5e6d3]/60">{album.description}</p>
           <p className="mt-4 text-[0.56rem] uppercase tracking-[0.24em] text-[#f5e6d3]/45">{album.photos.length} {album.photos.length === 1 ? "memory" : "memories"}</p>
         </div>
         <div className="flex shrink-0 items-center gap-3 pt-1">

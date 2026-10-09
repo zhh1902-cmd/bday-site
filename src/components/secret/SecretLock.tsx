@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Lock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { secretContent, secretMessage } from "@/data/secret";
+import { secretContent } from "@/data/secret";
 
 type SecretLockProps = {
   onClose: () => void;
@@ -16,6 +16,7 @@ export function SecretLock({ onClose, onUnlock }: SecretLockProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
   const [hasError, setHasError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -24,10 +25,29 @@ export function SecretLock({ onClose, onUnlock }: SecretLockProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (value === secretMessage.password) onUnlock();
-    else setHasError(true);
+    if (isSubmitting) return;
+    setHasError(false);
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/secret-letter/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: value }),
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        setHasError(true);
+        return;
+      }
+      setValue("");
+      onUnlock();
+    } catch {
+      setHasError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -38,10 +58,10 @@ export function SecretLock({ onClose, onUnlock }: SecretLockProps) {
         <h2 id="secret-lock-title" className="mt-6 text-[0.7rem] uppercase tracking-[0.42em] text-[#d4af6a]">{secretContent.lockTitle}</h2>
         <p className="mt-5 font-display text-3xl text-[#f5e6d3]">{secretContent.lockIntro}</p>
         <label htmlFor="secret-word" className="mt-9 block text-left text-[0.65rem] uppercase tracking-[0.25em] text-[#f5e6d3]/55">{secretContent.inputLabel}</label>
-        <input ref={inputRef} id="secret-word" type="password" value={value} onChange={(event) => { setValue(event.target.value); setHasError(false); }} className="mt-3 min-h-12 w-full border border-[#f5e6d3]/20 bg-[#050505] px-4 text-center text-lg tracking-[0.25em] text-[#f5e6d3] outline-none focus:border-[#d4af6a]" aria-describedby="secret-hint secret-error" autoComplete="off" />
-        <p id="secret-hint" className="mt-4 text-sm text-[#f5e6d3]/45">{secretContent.hintLabel}: {secretMessage.hint}</p>
+        <input ref={inputRef} id="secret-word" type="password" value={value} onChange={(event) => { setValue(event.target.value); setHasError(false); }} disabled={isSubmitting} className="mt-3 min-h-12 w-full border border-[#f5e6d3]/20 bg-[#050505] px-4 text-center text-lg tracking-[0.25em] text-[#f5e6d3] outline-none focus:border-[#d4af6a] disabled:opacity-60" aria-describedby="secret-hint secret-error" autoComplete="off" />
+        <p id="secret-hint" className="mt-4 text-sm text-[#f5e6d3]/45">{secretContent.hintLabel}: {secretContent.hint}</p>
         {hasError && <p id="secret-error" className="mt-5 text-sm text-[#b76e79]" role="alert">{secretContent.incorrectMessage}</p>}
-        <button type="submit" className="mt-8 min-h-12 border border-[#d4af6a]/60 px-8 py-3 text-[0.65rem] uppercase tracking-[0.3em] text-[#f5e6d3] transition hover:bg-[#4a1020]/60 focus-visible:ring-2 focus-visible:ring-[#d4af6a]">{secretContent.unlockLabel}</button>
+        <button type="submit" disabled={isSubmitting} className="mt-8 min-h-12 border border-[#d4af6a]/60 px-8 py-3 text-[0.65rem] uppercase tracking-[0.3em] text-[#f5e6d3] transition hover:bg-[#4a1020]/60 focus-visible:ring-2 focus-visible:ring-[#d4af6a] disabled:cursor-wait disabled:opacity-60">{secretContent.unlockLabel}</button>
       </form>
     </motion.div>
   );

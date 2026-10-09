@@ -6,10 +6,16 @@ import { MemoriesSection } from "@/components/memories/MemoriesSection";
 import { QuizSection } from "@/components/quiz/QuizSection";
 import { EmotionalMessages } from "@/components/emotional/EmotionalMessages";
 import { CakeSection } from "@/components/cake/CakeSection";
+import { BirthdayVoice } from "@/components/birthday/BirthdayVoice";
 
-export function BirthdayExperience() {
+type BirthdayExperienceProps = {
+  enableBirthdayVoice?: boolean;
+};
+
+export function BirthdayExperience({ enableBirthdayVoice = false }: BirthdayExperienceProps) {
   return (
     <main>
+      <BirthdayVoice enabled={enableBirthdayVoice} />
       <HeroSection />
       <BirthdayInfo />
       <SpecialDay />

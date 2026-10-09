@@ -48,12 +48,12 @@ export function HeroSection() {
       >
         <p className="mb-5 text-[0.68rem] uppercase tracking-[0.45em] text-[#d4af6a]">{birthdayConfig.hero.eyebrow}</p>
         <h1 className="font-display text-6xl leading-[0.9] text-[#f5e6d3] sm:text-8xl md:text-9xl">Happy Birthday</h1>
-        <p className="mt-6 font-display text-4xl text-[#f5e6d3]/90 sm:text-6xl">{birthdayConfig.partnerName}</p>
+        <p className="mt-6 font-display text-4xl text-[#f5e6d3]/90 sm:text-6xl">{birthdayConfig.hero.displayName}</p>
         <p className="mt-7 max-w-md text-base tracking-wide text-[#f5e6d3]/70 sm:text-lg">{birthdayConfig.hero.emotionalLine}</p>
       </motion.div>
 
-      <a href="#birthday-information" className="absolute bottom-7 right-6 z-10 flex items-center gap-3 text-[0.62rem] uppercase tracking-[0.3em] text-[#f5e6d3]/65 transition hover:text-[#d4af6a] sm:right-10" aria-label="Scroll to birthday information">
-        <span>Scroll to begin</span>
+      <a href="#birthday-information" className="absolute bottom-7 right-6 z-10 flex items-center gap-3 text-[0.62rem] uppercase tracking-[0.3em] text-[#f5e6d3]/65 transition hover:text-[#d4af6a] sm:right-10" aria-label="Idi click chey nana ❤️">
+        <span>Idi click chey nana ❤️</span>
         <ArrowDown size={14} aria-hidden="true" />
       </a>
     </section>

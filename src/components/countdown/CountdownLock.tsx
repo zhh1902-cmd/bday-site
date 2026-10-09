@@ -68,7 +68,7 @@ function CountdownDreamscape({ timeLeft, isLoading = false }: CountdownDreamscap
           </h1>
 
           <div className="mx-auto mt-12 max-w-4xl sm:mt-16">
-            <p className="mb-5 text-[0.62rem] uppercase tracking-[0.36em] text-[#f8eadc]/55">Your surprise unlocks in</p>
+            <p className="mb-5 text-[0.62rem] uppercase tracking-[0.36em] text-[#f8eadc]/55">{birthdayConfig.countdown.unlockText}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
               {segments.map((segment) => (
                 <div key={segment.label} className="countdown-segment relative px-3 py-5 sm:px-5 sm:py-7">
@@ -104,7 +104,7 @@ function CountdownDreamscape({ timeLeft, isLoading = false }: CountdownDreamscap
       {isLoading && <span className="sr-only">Loading birthday countdown</span>}
       <div className="pointer-events-none absolute bottom-5 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[#e4c58a]/35 sm:flex sm:text-[0.58rem] sm:uppercase sm:tracking-[0.34em]">
         <Clock3 size={12} aria-hidden="true" />
-        <span>the story is waiting</span>
+        <span>{birthdayConfig.countdown.finalSmallText}</span>
       </div>
     </div>
   );
@@ -126,26 +126,60 @@ export function CountdownLock() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const initializeTimer = () => {
-      const nextTime = getTimeRemaining(targetTimestamp);
-      setTimeLeft(nextTime);
-      setIsUnlocked(Date.now() >= targetTimestamp);
-      setIsReady(true);
+    let active = true;
+    let availabilityInterval: number | null = null;
+    let availabilityCheckInFlight = false;
+
+    const checkBirthdayAvailability = async () => {
+      if (availabilityCheckInFlight) return;
+      availabilityCheckInFlight = true;
+      try {
+        const response = await fetch("/api/birthday/availability", { cache: "no-store" });
+        if (!response.ok) throw new Error("Birthday availability is unavailable");
+        const result = await response.json() as { available?: boolean };
+        if (!active) return;
+        setTimeLeft(getTimeRemaining(targetTimestamp));
+        setIsReady(true);
+        setIsUnlocked(result.available === true);
+        if (result.available && availabilityInterval !== null) {
+          window.clearInterval(availabilityInterval);
+          availabilityInterval = null;
+        }
+      } catch {
+        if (active) {
+          setTimeLeft(getTimeRemaining(targetTimestamp));
+          setIsReady(true);
+          setIsUnlocked(false);
+        }
+      } finally {
+        availabilityCheckInFlight = false;
+      }
     };
 
-    initializeTimer();
+    const checkAvailabilityOnResume = () => {
+      if (document.visibilityState === "visible") void checkBirthdayAvailability();
+    };
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) checkAvailabilityOnResume();
+    };
 
-    if (Date.now() >= targetTimestamp) {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      const nextTime = getTimeRemaining(targetTimestamp);
-      setTimeLeft(nextTime);
-      setIsUnlocked(Date.now() >= targetTimestamp);
+    void checkBirthdayAvailability();
+    const countdownInterval = window.setInterval(() => {
+      setTimeLeft(getTimeRemaining(targetTimestamp));
     }, 1000);
+    availabilityInterval = window.setInterval(() => {
+      void checkBirthdayAvailability();
+    }, 10_000);
+    document.addEventListener("visibilitychange", checkAvailabilityOnResume);
+    window.addEventListener("pageshow", handlePageShow);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      active = false;
+      window.clearInterval(countdownInterval);
+      if (availabilityInterval !== null) window.clearInterval(availabilityInterval);
+      document.removeEventListener("visibilitychange", checkAvailabilityOnResume);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
   }, [targetTimestamp]);
 
   if (!isReady) {
@@ -153,8 +187,12 @@ export function CountdownLock() {
   }
 
   if (isUnlocked) {
-    return <BirthdayExperience />;
+    return <BirthdayExperience enableBirthdayVoice={isUnlocked} />;
   }
 
-  return <CountdownDreamscape timeLeft={timeLeft} />;
+  return (
+    <>
+      <CountdownDreamscape timeLeft={timeLeft} />
+    </>
+  );
 }

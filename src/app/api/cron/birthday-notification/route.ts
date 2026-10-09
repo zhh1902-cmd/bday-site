@@ -51,18 +51,59 @@ export async function GET(request: Request) {
   const scheduledAt = new Date(birthdayNotificationTime).toISOString();
 
   try {
-    const delivered = await sendPrivateEmail({
-      ...settings,
-      idempotencyKey: "birthday-surprise-bhavani-2026-10-10",
-      subject: "❤️ Open this before 12:00 AM",
-      text: `${birthdayNotificationCopy}\n\n[Open Your Birthday Surprise ❤️]\n${settings.siteUrl}\n\n— Akshi`,
-      scheduledAt,
-    });
+    const delivered = await sendBirthdayEmail(settings, "birthday-surprise-bhavani-2026-10-10", scheduledAt);
     if (!delivered) return jsonResponse({ error: "notification_delivery_failed" }, 502);
     return jsonResponse({ sent: !scheduledAt, scheduled: Boolean(scheduledAt), scheduledAt }, 200);
   } catch {
     return jsonResponse({ error: "notification_delivery_failed" }, 502);
   }
+}
+
+export async function POST(request: Request) {
+  if (process.env.NODE_ENV !== "production") {
+    return jsonResponse({ error: "delivery_only_available_in_production" }, 503);
+  }
+
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return jsonResponse({ error: "cron_not_configured" }, 503);
+  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
+    return jsonResponse({ error: "unauthorized" }, 401);
+  }
+  if (request.headers.get("x-birthday-notification-confirmation") !== "send-immediately") {
+    return jsonResponse({ error: "manual_send_confirmation_required" }, 400);
+  }
+  const now = Date.now();
+  if (now < birthdayActivationTime) {
+    return jsonResponse({ error: "birthday_time_not_reached" }, 409);
+  }
+  if (now >= birthdayActivationTime + 24 * 60 * 60 * 1000) {
+    return jsonResponse({ error: "manual_send_window_expired" }, 410);
+  }
+
+  const settings = getBirthdayNotificationSettings();
+  if (!settings) return jsonResponse({ error: "notification_provider_not_configured" }, 503);
+
+  try {
+    const delivered = await sendBirthdayEmail(settings, "birthday-surprise-bhavani-2026-10-10-manual");
+    if (!delivered) return jsonResponse({ error: "notification_delivery_failed" }, 502);
+    return jsonResponse({ sent: true }, 200);
+  } catch {
+    return jsonResponse({ error: "notification_delivery_failed" }, 502);
+  }
+}
+
+async function sendBirthdayEmail(
+  settings: NonNullable<ReturnType<typeof getBirthdayNotificationSettings>>,
+  idempotencyKey: string,
+  scheduledAt?: string,
+) {
+  return sendPrivateEmail({
+    ...settings,
+    idempotencyKey,
+    subject: "❤️ Open this before 12:00 AM",
+    text: `${birthdayNotificationCopy}\n\n[Open Your Birthday Surprise ❤️]\n${settings.siteUrl}\n\n— Akshi`,
+    ...(scheduledAt ? { scheduledAt } : {}),
+  });
 }
 
 function jsonResponse(body: object, status: number) {
